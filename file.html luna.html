@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ryfinite Clone - Dashboard</title>
+    <style>
+        :root {
+            --bg-deep: #0f0a1a;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --bg-glass-border: rgba(255, 255, 255, 0.1);
+            --accent-purple: #8a2be2;
+            --text-main: #ffffff;
+            --text-muted: #a0a0c0;
+            --highlight: #d8b4fe;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 20% 20%, #2d1b4e 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, #1b1233 0%, transparent 40%);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 260px;
+            background: rgba(0, 0, 0, 0.3);
+            border-right: 1px solid var(--bg-glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 22px;
+            margin-bottom: 40px;
+            letter-spacing: -1px;
+        }
+
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-links li:hover, .nav-links li.active {
+            background: var(--bg-glass);
+            color: var(--text-main);
+        }
+        .nav-links li.active {
+            border-left: 4px solid var(--accent-purple);
+        }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+        }
+
+        .content-left {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Glass Card Style */
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--bg-glass-border);
+            border-radius: 24px;
+            padding: 24px;
+        }
+
+        /* Passport Card */
+        .passport-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, rgba(138, 43, 226, 0.2), rgba(255, 255, 255, 0.05));
+        }
+        .passport-info { display: flex; gap: 15px; align-items: center; }
+        .passport-icon {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+        }
+
+        /* Main Quest Area */
+        .quest-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+            padding: 60px 40px;
+            text-align: left;
+        }
+        .quest-card h1 {
+            font-size: 42px;
+            margin: 0 0 15px 0;
+            line-height: 1.1;
+        }
+        .quest-card p {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-bottom: 30px;
+            max-width: 400px;
+        }
+        .btn-primary {
+            background: white;
+            color: black;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+        .btn-primary:hover { transform: scale(1.05); background: var(--highlight); }
+
+        /* Bottom Grid */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .bottom-card {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--bg-glass-border);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            flex: 1;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .balance-card {
+            background: linear-gradient(135deg, #3a1c71, #2d1b4e);
+            text-align: center;
+            padding: 30px;
+        }
+        .balance-amount {
+            font-size: 24px;
+            font-weight: 700;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .asset-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--bg-glass-border);
+            font-size: 14px;
+        }
+
+        .streak-card {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.2);
+        }
+        .fire-icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div>
+            <div class="logo">Ryfinite<span style="color: var(--accent-purple);">.</span></div>
+            <ul class="nav-links">
+                <li class="active">🏠 Dashboard</li>
+                <li>📜 Passport</li>
+                <li>🎯 Quests</li>
+                <li>🚀 Launchpad</li>
+                <li>👥 Friends</li>
+            </ul>
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted);">
+            v1.0.4 Beta
+        </div>
+    </aside>
+
+    <main>
+        <div class="content-left">
+            <div class="card passport-card">
+                <div class="passport-info">
+                    <div class="passport-icon">RP</div>
+                    <div>
+                        <div style="font-weight: 600;">Ryfinite Passport</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Verified Identity</div>
+                    </div>
+                </div>
+                <div style="font-size: 12px; background: var(--accent-purple); padding: 4px 10px; border-radius: 20px;">LVL 12</div>
+            </div>
+
+            <div class="card quest-card">
+                <div style="font-size: 12px; color: var(--accent-purple); font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">Current Quest</div>
+                <h1>Complete quests.<br>Earn Gems.</h1>
+                <p>Turn simple tasks into Gems, and Gems into crypto rewards. Join the ecosystem today.</p>
+                <button class="btn-primary">Start questing →</button>
+            </div>
+
+            <div class="bottom-grid">
+                <div class="card bottom-card">
+                    <div style="font-weight: 600;">Invite Friends</div>
+                    <p style="font-size: 13px; color: var(--text-muted);">Share your link and earn 500 Gems</p>
+                    <div class="input-group">
+                        <input type="text" value="ryfinite.com/join/user123" readonly>
+                        <button class="btn-primary" style="padding: 8px 15px; font-size: 12px;">Copy</button>
+                    </div>
+                </div>
+                <div class="card bottom-card">
+                    <div style="font-weight:**frontend code complete.**
+
+I have built a high-fidelity clone of the Ryfinite dashboard. It uses **Glassmorphism** (the "blurredSince the previous response was cut off, here is the **complete, polished code** for the Ryfinite-style dashboard. 
+
+I have used **Glassmorphism** (blurred backgrounds) and a **deep purple gradient** to match the exact aesthetic of the screenshot you provided.
+
+Save this entire block as `index.html` and open it in any browser.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ryfinite Dashboard Clone</title>
+    <style>
+        :root {
+            --bg-deep: #0b0714;
+            --bg-glass: rgba(255, 255, 255, 0.04);
+            --bg-glass-border: rgba(255, 255, 255, 0.08);
+            --accent-purple: #8a2be2;
+            --text-main: #ffffff;
+            --text-muted: #a0a0c0;
+            --highlight: #d8b4fe;
+            --card-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 20% 20%, #2d1b4e 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, #1b1233 0%, transparent 40%);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 260px;
+            background: rgba(0, 0, 0, 0.4);
+            border-right: 1px solid var(--bg-glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 24px;
+            margin-bottom: 50px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo span { color: var(--accent-purple); }
+
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .nav-links li:hover, .nav-links li.active {
+            background: var(--bg-glass);
+            color: var(--text-main);
+        }
+        .nav-links li.active {
+            background: rgba(138, 43, 226, 0.15);
+            color: var(--highlight);
+        }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+        }
+
+        .content-left {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Universal Card Style */
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--bg-glass-border);
+            border-radius: 24px;
+            padding: 24px;
+        }
+
+        /* Passport Card */
+        .passport-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, rgba(138, 43, 226, 0.2), rgba(255, 255, 255, 0.05));
+        }
+        .passport-info { display: flex; gap: 15px; align-items: center; }
+        .passport-icon {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: 800;
+            font-size: 14px;
+        }
+        .passport-text h3 { margin: 0; font-size: 16px; }
+        .passport-text p { margin: 0; font-size: 12px; color: var(--text-muted); }
+
+        /* Hero Quest Card */
+        .quest-card {
+            background: var(--card-gradient);
+            padding: 60px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .quest-card h1 {
+            font-size: 48px;
+            margin: 0 0 15px 0;
+            line-height: 1.1;
+            font-weight: 700;
+        }
+        .quest-card p {
+            color: var(--text-muted);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 35px;
+            max-width: 450px;
+        }
+        .btn-primary {
+            background: white;
+            color: black;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .btn-primary:hover { 
+            background: var(--highlight);
+            transform: translateY(-2px);
+        }
+
+        /* Bottom Grid */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .bottom-card h3 { margin-top: 0; font-size: 16px; }
+        .bottom-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 15px; }
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--bg-glass-border);
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            flex: 1;
+            font-size: 13px;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .balance-card {
+            background: linear-gradient(135deg, #4a1c71 0%, #2d1b4e 100%);
+            text-align: center;
+            padding: 30px;
+        }
+        .balance-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .balance-amount {
+            font-size: 28px;
+            font-weight: 700;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .asset-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--bg-glass-border);
+            font-size: 14px;
+        }
+        .asset-row:last-child { border: none; }
+
+        .streak-card {
+            text-align: center;
+            background: rgba(0,0,0,0.2);
+        }
+        .fire-icon {
+            font-size: 44px;
+            display: block;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px orange);
+        }
+        .streak-text { font-size: 14px; font-weight: 600; }
+        .streak-sub { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--bg-glass-border);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .btn-outline:hover { background: var(--bg-glass); }
+
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="top">
+            <div class="logo">Ryfinite<span>.</span></div>
+            <ul class="nav-links">
+                <li class="active">🏠 Dashboard</li>
+                <li>📜 Passport</li>
+                <li>🎯 Quests</li>
+                <li>🚀 Launchpad</li>
+                <li>👥 Friends</li>
+            </ul>
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted); text-align: center;">
+            © 2026 Ryfinite Studio
+        </div>
+    </aside>
+
+    <main>
+        <div class="content-left">
+            <!-- Top Passport Card -->
+            <div class="card passport-card">
+                <div class="passport-info">
+                    <div class="passport-icon">RP</div>
+                    <div class="passport-text">
+                        <h3>Ryfinite Passport</h3>
+                        <p>Your identity in the Ryfinite ecosystem</p>
+                    </div>
+                </div>
+                <div style="font-size: 12px; background: var(--accent-purple); padding: 5px 12px; border-radius: 20px; font-weight: 600;">
+                    Level 24
+                </div>
+            </div>
+
+            <!-- Hero Quest Area -->
+            <div class="card quest-card">
+                <div style="font-size: 12px; color: var(--highlight); font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Featured Quest</div>
+                <h1>Complete quests.<br>Earn Gems.</h1>
+                <p>Turn simple social tasks into Gems, and Gems into crypto rewards. Start your journey toward digital ownership today.</p>
+                <button class="btn-primary">Start questing →</button>
+            </div>
+
+            <!-- Bottom Grid -->
+            <div class="bottom-grid">
+                <div class="card bottom-card">
+                    <h3>Invite Friends</h3>
+                    <p>Earn 500 Gems for every friend who joins.</p>
+                    <div class="input-group">
+                        <input type="text" value="ryfinite.com/invite/abc123" readonly>
+                        <button class="btn-primary" style="padding: 8px 15px; font-size: 12px;">Copy</button>
+                    </div>
+                </div>
+                <div class="card bottom-card">
+                    <h3>Launchpool</h3>
+                    <p>Stake your Gems to earn new project tokens.</p>
+                    <button class="btn-outline">Explore Pool</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <!-- Balance Card -->
+            <div class="card balance-card">
+                <span class="balance-label">Total Balance</span>
+                <span class="balance-amount">1,250.50 GEM</span>
+            </div>
+
+            <!-- Portfolio Card -->
+            <div class="card">
+                <div style="font-weight: 600; margin-bottom: 15px; font-size: 15px;">Portfolio</div>
+                <div class="asset-row">
+                    <span>💎 GEM</span>
+                    <span>1,250.50</span>
+                </div>
+                <div class="asset-row">
+                    <span>🪙 ETH</span>
+                    <span>0.124</span>
+                </div>
+                <div class="asset-row">
+                    <span>🌟 SOL</span>
+                    <span>12.40</span>
+                </div>
+            </div>
+
+            <!-- Streak Card -->
+            <div class="card streak-card">
+                <span class="fire-icon">🔥</span>
+                <div class="streak-text">7 Day Streak!</div>
+                <div class="streak-sub">Check in daily to multiply your rewards</div>
+                <button class="btn-outline" style="background: rgba(255,255,255,0.1);">Check-in Now</button>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
